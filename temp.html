@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider with FPS Counter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #fps {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #slider {
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div id="fps">FPS: 0</div>
+    <input type="range" id="slider" min="1" max="100" value="1">
+    
+    <script>
+        const fpsElement = document.getElementById('fps');
+        const slider = document.getElementById('slider');
+        let fps, fpsInterval, startTime, now, then, elapsed;
+        let lagFactor = 1;
+
+        function startAnimating(fps) {
+            fpsInterval = 1000 / fps;
+            then = Date.now();
+            startTime = then;
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            now = Date.now();
+            elapsed = now - then;
+
+            if (elapsed > fpsInterval) {
+                then = now - (elapsed % fpsInterval);
+                const sinceStart = (now - startTime) / 1000;
+                const currentFps = Math.round(1 / sinceStart * 10) / 10;
+
+                // Update FPS display
+                fpsElement.textContent = 'FPS: ' + currentFps;
+
+                // Simulate lag
+                const lag = Math.pow(slider.value, 2) * lagFactor;
+                const end = Date.now() + lag;
+                while (Date.now() < end) {}
+            }
+        }
+
+        slider.addEventListener('input', () => {
+            lagFactor = slider.value;
+        });
+
+        startAnimating(60); // Target 60 FPS
+    </script>
+</body>
+</html>
